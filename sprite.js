@@ -1,5 +1,5 @@
 import { Node } from "./node.js";
-export class sprite extends Node {
+export class Sprite extends Node {
     constructor() {
         super();
         this._imageSrc = '';
@@ -10,7 +10,7 @@ export class sprite extends Node {
         elm.style.width = this._width;
         elm.style.position = "absolute";
         // elm.style.borderRadius = '15%';
-        // elm.style.border = '2px solid black';
+        // elm.style.border = '2px black';
         return elm;
     }
     get imageSrc() { return this._imageSrc; }

@@ -1,17 +1,22 @@
 import { Node } from "./node.js";
-import { sprite } from "./sprite.js";
+import { Sprite } from "./sprite.js";
+import { Label } from "./label.js";
 
 export class Card {
-  constructor(imageSrc, x, y) {
+  constructor(imageSrc, x, y,index) {
+
     this._imageSrc = imageSrc;
     this.node = new Node();
     this.cover = new Node();
-    this.image = new sprite();
+    this.image = new Sprite();
+    this.text = new Label();
+    this.restartButton = new Node();
     this.node.elm.appendChild(this.cover.elm);
     this.node.elm.appendChild(this.image.elm);
+    this.node.elm.appendChild(this.text.elm);
     document.body.appendChild(this.node.elm);
-    Card.WIDTH = 150;
-    Card.HEIGHT = 150;
+    Card.WIDTH = 130;
+    Card.HEIGHT = 130;
     Card.x = x;
     Card.y = y;
   }
@@ -29,8 +34,13 @@ export class Card {
     this.cover.height = Card.HEIGHT;
     this.cover.x = Card.x;
     this.cover.y = Card.y;
-    this.cover.elm.style.backgroundColor = 'orange';
+    this.cover.elm.style.backgroundColor = '#006666';
     this.cover.scaleX = 1;
+
+    this.text.width = Card.WIDTH;
+    this.text.height = Card.HEIGHT;
+    this.text.x = 709;
+    this.text.y = 205;
   }
 }
 
@@ -40,28 +50,58 @@ let flippedCards = [];
 const cards = [];
 let matchedPairs = 0;
 let score = 10000;
-let count = 0;
-let row = -1;
 let lockBoard = false;
 
 document.getElementById('score').innerHTML = 'Score: ' + score;
-shuffle(cardImages);
-cardImages.forEach((src, index) => { 
+// shuffle(cardImages);
+
+function startGame() { 
   const width = 150; 
   const height = 150; 
-  const startX = 600; 
+  const startX = 350; 
   const startY = 300; 
-  let card = new Card(src, startX + width * 2, height); 
-  card.createCard(); 
-  card.node.elm.addEventListener('click', flipCard) 
-  cards.push(card); 
-  movingCard(card, index); 
-}); 
+  let card = new Card("", startX + width * 2, height); 
+  card.createCard();   
+  cardImages.forEach((src, index) => { 
+    updateCard(card, src, index, index === cardImages.length - 1); 
+  }); 
+} 
+ 
+function updateCard(card, src, index, isFinished) { 
+  gsap.to(card.node.elm, { 
+    duration: 1, 
+    delay: index * 0.1, 
+    onComplete: () => { 
+      card.text.setText(`${index + 1}`);
+      // card.image.imageSrc = src; 
+      card.text.scaleX = 1; 
+      if (isFinished) { 
+        initCards(); 
+        card.node.elm.style.display = 'none';
+      } 
+    }, 
+  }) 
+} 
+startGame();
+
+function initCards(){
+  cardImages.forEach((src, index) => { 
+    const width = 150; 
+    const height = 150; 
+    const startX = 350; 
+    const startY = 300; 
+    let card = new Card(src, startX + width * 2, height); 
+    card.createCard(); 
+    card.node.elm.addEventListener('click', flipCard) 
+    cards.push(card); 
+    movingCard(card, index); 
+  }); 
+}
  
 function movingCard(card, index, width = 165, height = 165) { 
   gsap.to(card.node.elm, { 
     duration: 1, 
-    delay: index * 0.2, 
+    delay: index * 0.2  , 
     x: (index % 5 - 2) * width, 
     y: (Math.floor(index / 5) - 1.5) * height, 
     ease: 'elastic.out(1, 0.5)', 
@@ -71,7 +111,7 @@ function movingCard(card, index, width = 165, height = 165) {
   }) 
 }
 
-const duration = 0.5;
+const duration = 0.3;
 function flipCard() {
   if (lockBoard) return;
   lockBoard = true;
@@ -123,11 +163,12 @@ function checkMatch() {
     }
     score = updateScore(1000);
     matchedPairs++;
-    if (matchedPairs === cardImages.length) {
-      alert("You win ðŸŽ‰! Refresh to start again.");
+    if (matchedPairs === cardImages.length-10) {
+      alert("You win 🎉🎉! Refresh to start again.");
       setTimeout(() => {
         location.reload(true);
-      }, 2000);
+      }, 1000);
+      console( matchedPairs===20);
     }
   } else {
     gsap.to(card1.image.elm, { scaleX: 0, duration })
@@ -166,3 +207,4 @@ function updateScore(newUpdateScore) {
   document.getElementById('score').innerHTML = 'Score: ' + result;
   return score + newUpdateScore;
 }
+
