@@ -51,8 +51,6 @@ export class Node {
         elm.style.position = "absolute";
         elm.style.height = this._height;
         elm.style.width = this._width;
-        // elm.style.border = '2px solid black ';
-        // elm.style.borderRadius = '15%';
         return elm;
     }
 

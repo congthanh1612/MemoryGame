@@ -9,8 +9,6 @@ export class Sprite extends Node {
         elm.style.height = this._height;
         elm.style.width = this._width;
         elm.style.position = "absolute";
-        // elm.style.borderRadius = '15%';
-        // elm.style.border = '2px black';
         return elm;
     }
     get imageSrc() { return this._imageSrc; }

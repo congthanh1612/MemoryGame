@@ -3,42 +3,42 @@ import { Sprite } from "./sprite.js";
 import { Label } from "./label.js";
 
 export class Card {
-  constructor(imageSrc, x, y,index) {
+  constructor(imageSrc, x, y) {
 
     this._imageSrc = imageSrc;
     this.node = new Node();
     this.cover = new Node();
     this.image = new Sprite();
     this.text = new Label();
-    this.restartButton = new Node();
+    // this.restartButton = new Node();
     this.node.elm.appendChild(this.cover.elm);
     this.node.elm.appendChild(this.image.elm);
     this.node.elm.appendChild(this.text.elm);
     document.body.appendChild(this.node.elm);
-    Card.WIDTH = 130;
-    Card.HEIGHT = 130;
+    Card.width = 130;
+    Card.height = 130;
     Card.x = x;
     Card.y = y;
   }
 
-
   createCard() {
-    this.image.width = Card.WIDTH;
-    this.image.height = Card.HEIGHT;
+    this.image.width = Card.width;
+    this.image.height = Card.height;
     this.image.x = Card.x;
     this.image.y = Card.y;
     this.image.imageSrc = this._imageSrc;
     this.image.scaleX = 0;
 
-    this.cover.width = Card.WIDTH;
-    this.cover.height = Card.HEIGHT;
+    this.cover.width = Card.width;
+    this.cover.height = Card.height;
     this.cover.x = Card.x;
     this.cover.y = Card.y;
     this.cover.elm.style.backgroundColor = '#006666';
+
     this.cover.scaleX = 1;
 
-    this.text.width = Card.WIDTH;
-    this.text.height = Card.HEIGHT;
+    // this.card.text.style.width = 100 ;
+    // this.card.text.style.height = 100 ;  
     this.text.x = 709;
     this.text.y = 205;
   }
@@ -49,17 +49,30 @@ cardImages = cardImages.concat(cardImages.slice(0));
 let flippedCards = [];
 const cards = [];
 let matchedPairs = 0;
-let score = 10000;
+let score = 5000;
 let lockBoard = false;
+const width = 150; 
+const height = 150; 
+const startX = 350; 
 
 document.getElementById('score').innerHTML = 'Score: ' + score;
 // shuffle(cardImages);
 
+const restartButton = document.getElementById('restartButton');
+restartButton.addEventListener('click', restartGame);
+
+function restartGame() {
+  flippedCards = [];
+  cards.forEach(card => card.node.elm.remove());
+  cards.length = 0;
+  matchedPairs = 0;
+  score = 5000;
+  document.getElementById('score').innerHTML = 'Score: ' + score;
+  startGame();
+}
+
+
 function startGame() { 
-  const width = 150; 
-  const height = 150; 
-  const startX = 350; 
-  const startY = 300; 
   let card = new Card("", startX + width * 2, height); 
   card.createCard();   
   cardImages.forEach((src, index) => { 
@@ -73,7 +86,6 @@ function updateCard(card, src, index, isFinished) {
     delay: index * 0.1, 
     onComplete: () => { 
       card.text.setText(`${index + 1}`);
-      // card.image.imageSrc = src; 
       card.text.scaleX = 1; 
       if (isFinished) { 
         initCards(); 
@@ -86,10 +98,6 @@ startGame();
 
 function initCards(){
   cardImages.forEach((src, index) => { 
-    const width = 150; 
-    const height = 150; 
-    const startX = 350; 
-    const startY = 300; 
     let card = new Card(src, startX + width * 2, height); 
     card.createCard(); 
     card.node.elm.addEventListener('click', flipCard) 
@@ -98,7 +106,7 @@ function initCards(){
   }); 
 }
  
-function movingCard(card, index, width = 165, height = 165) { 
+function movingCard(card, index) { 
   gsap.to(card.node.elm, { 
     duration: 1, 
     delay: index * 0.2  , 
@@ -161,7 +169,7 @@ function checkMatch() {
         lockBoard = false;
       }, 1500);
     }
-    score = updateScore(1000);
+    score = updateScore(2000);
     matchedPairs++;
     if (matchedPairs === cardImages.length-10) {
       alert("You win 🎉🎉! Refresh to start again.");
@@ -180,7 +188,7 @@ function checkMatch() {
       }
     })
 
-    score = updateScore(-500);
+    score = updateScore(-1000);
     if (score < 0) {
       alert('You lose ! Refresh to try again');
       setTimeout(() => {
